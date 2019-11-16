@@ -5,6 +5,7 @@ const helmet = require('helmet')
 const cors = require('cors')
 const { NODE_ENV } = require('./config')
 const logger = require('./logger')
+const bookmarkRouter = require('./bookmark/bookmarkRouter')
 
 const app = express()
 const morganOption = NODE_ENV === 'production' ? 'tiny' : 'dev'
@@ -16,7 +17,7 @@ app.use(validateBearerToken)
 app.get('/', (req, res) => {
   res.send('Hello boilerplate')
 })
-
+app.use(bookmarkRouter)
 app.use(errorHandler)
 
 function validateBearerToken(req, res, next) {
