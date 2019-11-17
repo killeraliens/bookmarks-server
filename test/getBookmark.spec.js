@@ -9,13 +9,13 @@ describe('GET /bookmarks/:id endpoint', () => {
       .set(authHeader)
       .expect(200)
       .then(res => {
-        expect(res.body).to.include.keys('id')
+        expect(res.body).to.include.keys('id', 'title')
       })
   })
 
   it('responds with 404 if bookmark does not exist', () => {
     return supertest(app)
-      .get('bookmarks/666')
+      .get('/bookmarks/666')
       .set(authHeader)
       .expect(404)
   })

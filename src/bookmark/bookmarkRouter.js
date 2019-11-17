@@ -14,6 +14,7 @@ bookmarkRouter
 bookmarkRouter
   .route('/bookmarks/:id')
   .get(getBookmark)
+  .delete(deleteBookmark)
 
 
   function getBookmarks(req, res) {
@@ -60,6 +61,22 @@ bookmarkRouter
       .json(bookmark)
   }
 
+  function deleteBookmark(req, res) {
+    const { id } = req.params
+
+    const bmI = BOOKMARKS.findIndex(bm => bm.id == id)
+
+    if (bmI === -1) {
+      logger.error(`Bookmark with id ${id} does not exist, cannot delete`)
+      return res.status(404).json({error: 'Not Found'})
+    }
+
+    BOOKMARKS.splice(bmI, 1)
+    logger.info(`bookmark with id ${id} deleted`)
+    res
+      .status(204)
+      .end()
+  }
 
 
 module.exports = bookmarkRouter
