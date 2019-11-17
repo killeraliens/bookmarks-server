@@ -16,8 +16,8 @@ describe('GET /bookmarks/:id endpoint', () => {
   it('responds with 404 if bookmark does not exist', () => {
     return supertest(app)
       .get('bookmarks/666')
-      //.set(authHeader)
-      .expect(400)
+      .set(authHeader)
+      .expect(404)
   })
 
 })
