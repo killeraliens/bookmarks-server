@@ -3,6 +3,14 @@ const BookmarksService = {
     return db
       .select('*')
       .from('bookmarks')
+  },
+
+  getById(db, id) {
+    return db
+      .select('*')
+      .from('bookmarks')
+      .where('id', id)
+      .first()
   }
 
 
