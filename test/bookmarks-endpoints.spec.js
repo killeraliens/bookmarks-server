@@ -72,5 +72,14 @@ describe('Bookmarks Endpoints', () => {
           .expect(200, testBookmark)
       })
     })
+
+    context('given the bookmarks table has no data', () => {
+      it('responds with 404 if bookmark does not exist', () => {
+        return supertest(app)
+          .get('/bookmarks/666')
+          .set(authHeader)
+          .expect(404, {error: {message: `Bookmark doesn't exist`}})
+      })
+    })
   })
 })
