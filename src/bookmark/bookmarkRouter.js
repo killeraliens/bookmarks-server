@@ -1,6 +1,7 @@
 const express = require('express')
 const logger = require('../logger')
 const uuid = require('uuid/v4')
+const BookmarksService = require('./bookmarks-service')
 const { BOOKMARKS } = require('../STORE')
 
 const bookmarkRouter = express.Router()
@@ -19,7 +20,12 @@ bookmarkRouter
 
   function getBookmarks(req, res) {
     logger.info('successful get /bookmarks')
-    res.json(BOOKMARKS)
+    const db = req.app.get('db')
+    BookmarksService.getBookmarks(db)
+      .then(bookmarks => {
+        res.json(bookmarks)
+      })
+
   }
 
   function getBookmark(req, res) {

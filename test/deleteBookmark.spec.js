@@ -1,6 +1,6 @@
 const app = require('../src/app')
 
-describe('DELETE /bookmarks/:id endpoint', () => {
+describe.skip('DELETE /bookmarks/:id endpoint', () => {
  it('returns 204 upon successful delete', () => {
    return supertest(app)
      .delete('/bookmarks/2')

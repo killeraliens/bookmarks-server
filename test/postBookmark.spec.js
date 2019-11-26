@@ -1,6 +1,6 @@
 const app = require('../src/app')
 
-describe('POST /bookmarks endpoint', () => {
+describe.skip('POST /bookmarks endpoint', () => {
 
   const goodBookmark = {
     "title": "cool title bro",

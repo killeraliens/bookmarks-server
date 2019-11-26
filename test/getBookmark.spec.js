@@ -1,7 +1,7 @@
 const app = require('../src/app')
 //const logger = require('../src/logger')
 
-describe('GET /bookmarks/:id endpoint', () => {
+describe.skip('GET /bookmarks/:id endpoint', () => {
 
   it('responds with 200 and bookmark if exists', () => {
     return supertest(app)

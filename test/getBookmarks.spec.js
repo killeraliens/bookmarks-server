@@ -1,9 +1,6 @@
 const app = require('../src/app')
 
-describe('GET /bookmarks endpoint', () => {
-  // const authHeader = {
-  //   "Authorization": `Bearer ${process.env.API_TOKEN}`
-  // }
+describe.skip('GET /bookmarks endpoint', () => {
 
   it('responds with an array containing at least one bookmark', () => {
     return supertest(app)
