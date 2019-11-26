@@ -21,6 +21,7 @@ describe('POST /bookmarks endpoint', () => {
       .set(authHeader)
       .send(goodBookmark)
       .expect(201)
+      .expect('Content-Type', /json/)
       .then(res => {
         expect(res.body).to.include.keys('id', 'title', 'description', 'rating', "url")
       })
