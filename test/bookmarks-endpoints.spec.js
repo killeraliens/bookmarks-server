@@ -1,6 +1,6 @@
 const app = require('../src/app')
 const knex = require('knex')
-const { createBookmarksArray } = require('./bookmarks.fixtures')
+const { createBookmarksArray, createBookmarkObject } = require('./bookmarks.fixtures')
 
 describe('Bookmarks Endpoints', () => {
   let db;
@@ -52,6 +52,7 @@ describe('Bookmarks Endpoints', () => {
           .expect(200, [])
       })
     })
+
   })
 
   describe('GET /bookmarks/:bookmark_id', () => {
@@ -82,4 +83,36 @@ describe('Bookmarks Endpoints', () => {
       })
     })
   })
+
+  describe('POST /bookmarks', () => {
+    context('given that the body is accurate', () => {
+      it('creates new bookmark and responds with 201 and new bookmark', () => {
+        const goodBookmark = createBookmarkObject.goodBookmark()
+        return supertest(app)
+          .post('/bookmarks')
+          .set(authHeader)
+          .send(goodBookmark)
+          .expect(201)
+          .expect('Content-Type', /json/)
+          .expect(res => {
+            expect(res.body).to.include.keys(['id', 'title', 'description', 'rating', 'url'])
+            expect(res.body).to.have.property('id')
+            expect(res.body).to.have.property('description')
+            expect(res.body).to.have.property('rating')
+            expect(res.body.title).to.eql(goodBookmark.title)
+            expect(res.body.url).to.eql(goodBookmark.url)
+            expect(res.headers.location).to.eql(`/bookmarks/${res.body.id}`)
+          })
+          .then(res => {
+            return supertest(app)
+              .get(`/bookmarks/${res.body.id}`)
+              .set(authHeader)
+              .expect(200)
+              .expect(res.body)
+          })
+      })
+    })
+  })
+
+
 })

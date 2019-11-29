@@ -45,8 +45,10 @@ function getBookmark(req, res, next) {
 
 }
 
-function postBookmark(req, res) {
+function postBookmark(req, res, next) {
   const { title, url, description='', rating=1 } = req.body
+  const db = req.app.get('db')
+
   if (!title) {
     logger.error('missing title')
     res.status(400).json({error: 'Invalid Data'})
@@ -55,14 +57,18 @@ function postBookmark(req, res) {
     logger.error('missing url')
     res.status(400).json({ error: 'Invalid Data' })
   }
-  const id = uuid()
-  const bookmark = {...req.body, id, description, rating}
-  BOOKMARKS.push(bookmark)
-  logger.info(`successful bookmark post with id ${id}`)
-  res
-    .status(201)
-    .location(`/bookmarks/${id}`)
-    .json(bookmark)
+  //const id = uuid()
+  const bookmark = {title, url, description, rating}
+  //BOOKMARKS.push(bookmark)
+  BookmarksService.postBookmark(db, bookmark)
+    .then(bookmark => {
+      logger.info(`successful bookmark post with id ${bookmark.id}`)
+      res
+        .status(201)
+        .location(`/bookmarks/${bookmark.id}`)
+        .json(bookmark)
+    })
+    .catch(next)
 }
 
 function deleteBookmark(req, res) {

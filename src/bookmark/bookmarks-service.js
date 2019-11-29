@@ -11,6 +11,14 @@ const BookmarksService = {
       .from('bookmarks')
       .where('id', id)
       .first()
+  },
+
+  postBookmark(db, data){
+    return db
+      .insert(data)
+      .into('bookmarks')
+      .returning('*')
+      .then(rows => rows[0])
   }
 
 

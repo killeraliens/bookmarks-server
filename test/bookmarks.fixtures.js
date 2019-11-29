@@ -24,4 +24,25 @@ function createBookmarksArray() {
   ];
 }
 
-module.exports = { createBookmarksArray }
+const createBookmarkObject = {
+  goodBookmark() {
+    return {
+      "title": "cool title bro",
+      "url": "http://www.goatsguide.com"
+    }
+  },
+
+  missingTitleBookmark() {
+    return {
+      "url": "http://www.goatsguide.com"
+    }
+  },
+
+  missingUrlBookmark() {
+    return {
+      "title": "some title"
+    }
+  }
+}
+
+module.exports = { createBookmarksArray, createBookmarkObject }
