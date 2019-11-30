@@ -28,7 +28,9 @@ const createBookmarkObject = {
   goodBookmark() {
     return {
       "title": "cool title bro",
-      "url": "http://www.goatsguide.com"
+      "url": "http://www.goatsguide.com",
+      "rating": 4,
+      "description": "some description"
     }
   },
 
@@ -41,6 +43,30 @@ const createBookmarkObject = {
   missingUrlBookmark() {
     return {
       "title": "some title"
+    }
+  },
+
+  nanRatingBookmark() {
+    return {
+      "title": "cool title bro",
+      "url": "http://www.goatsguide.com",
+      "rating": "not a number!!"
+    }
+  },
+
+  outOfRangeRatingBookmark() {
+    return {
+      "title": "cool title bro",
+      "url": "http://www.goatsguide.com",
+      "rating": 6
+    }
+  },
+
+  invalidUrl() {
+    return {
+      "title": "cool title bro",
+      "url": "htp://www.goatsguide.com",
+      "rating": 4
     }
   }
 }

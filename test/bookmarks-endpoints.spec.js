@@ -96,10 +96,9 @@ describe('Bookmarks Endpoints', () => {
           .expect('Content-Type', /json/)
           .expect(res => {
             expect(res.body).to.include.keys(['id', 'title', 'description', 'rating', 'url'])
-            expect(res.body).to.have.property('id')
-            expect(res.body).to.have.property('description')
-            expect(res.body).to.have.property('rating')
+            expect(res.body.rating).to.eql(goodBookmark.rating)
             expect(res.body.title).to.eql(goodBookmark.title)
+            expect(res.body.description).to.eql(goodBookmark.description)
             expect(res.body.url).to.eql(goodBookmark.url)
             expect(res.headers.location).to.eql(`/bookmarks/${res.body.id}`)
           })
@@ -108,10 +107,58 @@ describe('Bookmarks Endpoints', () => {
               .get(`/bookmarks/${res.body.id}`)
               .set(authHeader)
               .expect(200)
-              .expect(res.body)
+              .expect(() =>res.body)
           })
       })
     })
+
+    context('given that the body has missing data', () => {
+      const reqFields = ['title', 'url', 'rating']
+      reqFields.forEach(field => {
+        const newBookmark = createBookmarkObject.goodBookmark()
+        it(`responds with 400 and required ${field} field error`, () => {
+          delete newBookmark[field]
+          return supertest(app)
+            .post('/bookmarks')
+            .set(authHeader)
+            .send(newBookmark)
+            .expect(400, {error: {message: `${field} required`}})
+        })
+      })
+    })
+
+    context('given that the body has invalid data', () => {
+      it('responds with 400 and error when rating is not a number', () => {
+        const nanRatingBookmark = createBookmarkObject.nanRatingBookmark()
+        return supertest(app)
+          .post('/bookmarks')
+          .set(authHeader)
+          .send(nanRatingBookmark)
+          .expect(400, { error: { message: `rating must be a number in range of 1-5`}})
+      })
+
+      it('responds with 400 and error when rating is out of range', () => {
+        const outOfRangeRatingBookmark = createBookmarkObject.outOfRangeRatingBookmark()
+        return supertest(app)
+          .post('/bookmarks')
+          .set(authHeader)
+          .send(outOfRangeRatingBookmark)
+          .expect(400, { error: { message: `rating must be a number in range of 1-5` } })
+      })
+
+      it('responds with 400 and error when url is invalid', () => {
+        const invalidUrl = createBookmarkObject.invalidUrl()
+        return supertest(app)
+          .post('/bookmarks')
+          .set(authHeader)
+          .send(invalidUrl)
+          .expect(400, {error: {message: `url is invalid`}})
+      })
+
+    })
+
+
+
   })
 
 

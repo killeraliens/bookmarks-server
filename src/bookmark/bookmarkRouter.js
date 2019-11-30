@@ -46,21 +46,33 @@ function getBookmark(req, res, next) {
 }
 
 function postBookmark(req, res, next) {
-  const { title, url, description='', rating=1 } = req.body
   const db = req.app.get('db')
 
-  if (!title) {
-    logger.error('missing title')
-    res.status(400).json({error: 'Invalid Data'})
+  const reqFields = ['title', 'url', 'rating']
+  reqFields.forEach(field => {
+    if (!req.body[field]) {
+      logger.error(`${field} required`)
+      return res.status(400).json({ error: { message: `${field} required` } })
+    }
+  })
+
+  const {title, url, description} = req.body
+  const rating = Number(req.body.rating)
+
+  if(!Number.isInteger(rating) || rating < 1 || rating > 5) {
+    logger.error(`rating ${rating} must be a number in range of 1-5`)
+    return res.status(400).json({ error: { message: `rating must be a number in range of 1-5` } })
   }
-  if (!url) {
-    logger.error('missing url')
-    res.status(400).json({ error: 'Invalid Data' })
+
+  const regex = new RegExp("^(http[s]?:\\/\\/(www\\.)?|ftp:\\/\\/(www\\.)?|www\\.){1}([0-9A-Za-z-\\.@:%_\+~#=]+)+((\\.[a-zA-Z]{2,3})+)(/(.)*)?(\\?(.)*)?");
+  if(!regex.test(url)) {
+    logger.error(`${url} is not a valid url`)
+    return res.status(400).json({error: {message: 'url is invalid'}})
   }
-  //const id = uuid()
-  const bookmark = {title, url, description, rating}
-  //BOOKMARKS.push(bookmark)
-  BookmarksService.postBookmark(db, bookmark)
+
+  const newBookmark = { title, url, description, rating }
+
+  BookmarksService.insertBookmark(db, newBookmark)
     .then(bookmark => {
       logger.info(`successful bookmark post with id ${bookmark.id}`)
       res

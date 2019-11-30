@@ -13,7 +13,7 @@ const BookmarksService = {
       .first()
   },
 
-  postBookmark(db, data){
+  insertBookmark(db, data){
     return db
       .insert(data)
       .into('bookmarks')
