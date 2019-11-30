@@ -68,6 +68,24 @@ const createBookmarkObject = {
       "url": "htp://www.goatsguide.com",
       "rating": 4
     }
+  },
+
+  xssBookmark() {
+    return {
+      "title": 'Naughty naughty very naughty <script>alert("xss");</script>',
+      "url": `http://www.<script>alert("xss");</script>goatsguide.com`,
+      "rating": 4,
+      "description": `Bad image <img src="https://url.to.file.which/does-not.exist" onerror="alert(document.cookie);">. But not <strong>all</strong> bad.`
+    }
+  },
+
+  sanitizedBookmark() {
+    return {
+      "title": 'Naughty naughty very naughty &lt;script&gt;alert(\"xss\");&lt;/script&gt;',
+      "url": `http://www.&lt;script&gt;alert(\"xss\");&lt;/script&gt;goatsguide.com`,
+      "rating": 4,
+      "description": `Bad image <img src="https://url.to.file.which/does-not.exist">. But not <strong>all</strong> bad.`
+    }
   }
 }
 

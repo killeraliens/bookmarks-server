@@ -6,6 +6,16 @@ const { BOOKMARKS } = require('../STORE')
 const bookmarkRouter = express.Router()
 const bodyParser = express.json()
 const BookmarksService = require('./bookmarks-service')
+const xss = require('xss')
+function sanitizeData(bookmark) {
+  return {
+    id: bookmark.id,
+    description: xss(bookmark.description),
+    title: xss(bookmark.title),
+    rating: bookmark.rating,
+    url: xss(bookmark.url)
+  }
+}
 
 bookmarkRouter
   .route('/bookmarks')
@@ -18,15 +28,15 @@ bookmarkRouter
   .delete(deleteBookmark)
 
 
- function getBookmarks(req, res, next) {
-   const db = req.app.get('db')
-   BookmarksService.getBookmarks(db)
-   .then(bookmarks => {
-       logger.info('successful get /bookmarks')
-       res.json(bookmarks)
-   })
-   .catch(next)
- }
+function getBookmarks(req, res, next) {
+  const db = req.app.get('db')
+  BookmarksService.getBookmarks(db)
+  .then(bookmarks => {
+      logger.info('successful get /bookmarks')
+      res.json(bookmarks.map(bookmark => sanitizeData(bookmark)))
+  })
+  .catch(next)
+}
 
 function getBookmark(req, res, next) {
   const { id } = req.params
@@ -39,7 +49,7 @@ function getBookmark(req, res, next) {
          return res.status(404).json({ error: { message: `Bookmark doesn't exist` } })
        }
       logger.info(`successful get /bookmark/${id}}`)
-      res.json(bookmark)
+      res.json(sanitizeData(bookmark))
     })
     .catch(next)
 

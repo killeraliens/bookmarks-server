@@ -53,6 +53,27 @@ describe('Bookmarks Endpoints', () => {
       })
     })
 
+    context('given there is XSS in bookmark fields', () => {
+      const xssBookmark = createBookmarkObject.xssBookmark()
+      const expectedBookmark = createBookmarkObject.sanitizedBookmark()
+      beforeEach('insert xssBookmark', () => {
+        return db
+          .insert(xssBookmark)
+          .into('bookmarks')
+      })
+
+      it('responds with 200 and sanitized bookmarks', () => {
+        return supertest(app)
+          .get('/bookmarks')
+          .set(authHeader)
+          .expect(200)
+          .expect(res => {
+            expect(res.body[0]).to.eql({...expectedBookmark, id: 1})
+          })
+      })
+
+    })
+
   })
 
   describe('GET /bookmarks/:bookmark_id', () => {
@@ -81,6 +102,27 @@ describe('Bookmarks Endpoints', () => {
           .set(authHeader)
           .expect(404, {error: {message: `Bookmark doesn't exist`}})
       })
+    })
+
+    context('given there is XSS in bookmark fields', () => {
+      const xssBookmark = createBookmarkObject.xssBookmark()
+      const expectedBookmark = createBookmarkObject.sanitizedBookmark()
+      beforeEach('insert xssBookmark', () => {
+        return db
+          .insert(xssBookmark)
+          .into('bookmarks')
+      })
+
+      it('responds with 200 and sanitized bookmarks', () => {
+        return supertest(app)
+          .get('/bookmarks/1')
+          .set(authHeader)
+          .expect(200)
+          .expect(res => {
+            expect(res.body).to.eql({ ...expectedBookmark, id: 1 })
+          })
+      })
+
     })
   })
 
