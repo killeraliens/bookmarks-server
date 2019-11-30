@@ -19,8 +19,14 @@ const BookmarksService = {
       .into('bookmarks')
       .returning('*')
       .then(rows => rows[0])
-  }
+  },
 
+  deleteBookmark(db, id) {
+    return db
+      .from('bookmarks')
+      .where('id', id)
+      .delete()
+  }
 
 }
 

@@ -203,5 +203,46 @@ describe('Bookmarks Endpoints', () => {
 
   })
 
+  describe('DELETE /bookmarks/:bookmark_id', () => {
+    const actualBookmarks = createBookmarksArray()
+    beforeEach('insert bookmarks', () => {
+      return db
+        .insert(actualBookmarks)
+        .into('bookmarks')
+    })
+
+    context('given that the bookmark exists', () => {
+      const deleteId = actualBookmarks[0].id
+      const expectedBookmarks = actualBookmarks.filter(bm => bm.id !== deleteId)
+
+
+      it('responds with 204 and deletes bookmark', () => {
+        return supertest(app)
+          .delete(`/bookmarks/${deleteId}`)
+          .set(authHeader)
+          .expect(204)
+          .then(() => {
+            return supertest(app)
+              .get('/bookmarks')
+              .set(authHeader)
+              .expect(res => {
+                expect(res.body).to.eql(expectedBookmarks)
+              })
+          })
+      })
+    })
+
+    context('given that the bookmark does not exist', () => {
+      const deleteId = 666
+
+      it('responds with 404 and error message', () => {
+        return supertest(app)
+          .delete(`/bookmarks/${deleteId}`)
+          .set(authHeader)
+          .expect(404, { error: { message: `Bookmark doesn't exist`}})
+      })
+    })
+  })
+
 
 })

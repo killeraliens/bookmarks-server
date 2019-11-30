@@ -97,17 +97,26 @@ function postBookmark(req, res, next) {
 }
 
 function deleteBookmark(req, res) {
-  const { id } = req.params
+  //const { id } = req.params
+
   //const bmI = BOOKMARKS.findIndex(bm => bm.id == id)
   // if (bmI === -1) {
   //   logger.error(`Bookmark with id ${id} does not exist, cannot delete`)
   //   return res.status(404).json({error: 'Not Found'})
   // }
   //BOOKMARKS.splice(bmI, 1)
-  logger.info(`bookmark with id ${id} deleted`)
-  res
-    .status(204)
-    .end()
+  BookmarksService
+    .deleteBookmark(
+      req.app.get('db'),
+      res.bookmark.id
+    )
+    .then(() => {
+      res
+        .status(204)
+        .end()
+    })
+
+  logger.info(`bookmark with id ${res.bookmark.id} deleted`)
 }
 
 
