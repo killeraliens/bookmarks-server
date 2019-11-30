@@ -24,9 +24,25 @@ bookmarkRouter
 
 bookmarkRouter
   .route('/bookmarks/:id')
+  .all(checkExists)
   .get(getBookmark)
   .delete(deleteBookmark)
 
+function checkExists(req, res, next) {
+  const { id } = req.params
+  const db = req.app.get('db')
+
+  BookmarksService
+    .getById(db, id)
+    .then(bookmark => {
+      if (!bookmark) {
+        return res.status(404).json({error: {message: `Bookmark doesn't exist`}})
+      }
+      res.bookmark = bookmark
+      next()
+    })
+    .catch(next)
+}
 
 function getBookmarks(req, res, next) {
   const db = req.app.get('db')
@@ -39,20 +55,7 @@ function getBookmarks(req, res, next) {
 }
 
 function getBookmark(req, res, next) {
-  const { id } = req.params
-  const db = req.app.get('db');
-
-  BookmarksService.getById(db, id)
-    .then(bookmark => {
-       if(!bookmark) {
-         logger.error(`Bookmark with id ${id} not found`)
-         return res.status(404).json({ error: { message: `Bookmark doesn't exist` } })
-       }
-      logger.info(`successful get /bookmark/${id}}`)
-      res.json(sanitizeData(bookmark))
-    })
-    .catch(next)
-
+  res.json(sanitizeData(res.bookmark))
 }
 
 function postBookmark(req, res, next) {
@@ -95,12 +98,12 @@ function postBookmark(req, res, next) {
 
 function deleteBookmark(req, res) {
   const { id } = req.params
-  const bmI = BOOKMARKS.findIndex(bm => bm.id == id)
-  if (bmI === -1) {
-    logger.error(`Bookmark with id ${id} does not exist, cannot delete`)
-    return res.status(404).json({error: 'Not Found'})
-  }
-  BOOKMARKS.splice(bmI, 1)
+  //const bmI = BOOKMARKS.findIndex(bm => bm.id == id)
+  // if (bmI === -1) {
+  //   logger.error(`Bookmark with id ${id} does not exist, cannot delete`)
+  //   return res.status(404).json({error: 'Not Found'})
+  // }
+  //BOOKMARKS.splice(bmI, 1)
   logger.info(`bookmark with id ${id} deleted`)
   res
     .status(204)
