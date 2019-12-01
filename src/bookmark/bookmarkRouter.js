@@ -1,7 +1,5 @@
 const express = require('express')
 const logger = require('../logger')
-const uuid = require('uuid/v4')
-const { BOOKMARKS } = require('../STORE')
 
 const bookmarkRouter = express.Router()
 const bodyParser = express.json()
@@ -96,27 +94,21 @@ function postBookmark(req, res, next) {
     .catch(next)
 }
 
-function deleteBookmark(req, res) {
+function deleteBookmark(req, res, next) {
+  const db = req.app.get('db')
+  const id = res.bookmark.id
   //const { id } = req.params
 
-  //const bmI = BOOKMARKS.findIndex(bm => bm.id == id)
-  // if (bmI === -1) {
-  //   logger.error(`Bookmark with id ${id} does not exist, cannot delete`)
-  //   return res.status(404).json({error: 'Not Found'})
-  // }
-  //BOOKMARKS.splice(bmI, 1)
   BookmarksService
-    .deleteBookmark(
-      req.app.get('db'),
-      res.bookmark.id
-    )
+    .deleteBookmark(db, id)
     .then(() => {
+      logger.info(`bookmark with id ${id} deleted`)
       res
         .status(204)
         .end()
     })
+    .catch(next)
 
-  logger.info(`bookmark with id ${res.bookmark.id} deleted`)
 }
 
 
