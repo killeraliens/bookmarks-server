@@ -244,5 +244,91 @@ describe('Bookmarks Endpoints', () => {
     })
   })
 
+  describe('PATCH /bookmarks/:bookmark_id', () => {
+
+    context('given that the bookmark exists', () => {
+      const actualBookmarks = createBookmarksArray()
+
+      beforeEach('insert bookmarks', () => {
+        return db
+          .insert(actualBookmarks)
+          .into('bookmarks')
+      })
+
+      const idToPatch = actualBookmarks[1].id
+      const ogBookmark = actualBookmarks.find(bm => bm.id == idToPatch)
+
+      it('responds with 204', () => {
+        const patchBody = {
+          description: `New description`,
+          title: `New title`,
+          rating: 1,
+          url: `http://www.new-url.com`
+        }
+        const expectedBookmark = {
+          ...ogBookmark,
+          ...patchBody
+        }
+        return supertest(app)
+          .patch(`/bookmarks/${idToPatch}`)
+          .set(authHeader)
+          .send(patchBody)
+          .expect(204)
+          .then(() => {
+            return supertest(app)
+              .get(`/bookmarks/${idToPatch}`)
+              .set(authHeader)
+              .expect(expectedBookmark)
+          })
+      })
+
+      it('responds with 400 when body does not contain at least one required field', () => {
+        const missingFieldPatchBody = {
+          notAField: `I should be title, url, description, or rating update`
+        }
+
+        return supertest(app)
+          .patch(`/bookmarks/${idToPatch}`)
+          .set(authHeader)
+          .send(missingFieldPatchBody)
+          .expect(400, { error: { message: `Bookmark must contain an update to relevant field (title, url, description, or rating)`}})
+      })
+
+      it('responds with 204 and ignores bad fields when updating at least one required field', () => {
+        const mixedFieldPatchBody = {
+          title: `I should be updated`,
+          badField: `I should be ignored`
+        }
+        const expectedBookmark = {
+          ...ogBookmark,
+          title: mixedFieldPatchBody.title
+        }
+
+        return supertest(app)
+          .patch(`/bookmarks/${idToPatch}`)
+          .set(authHeader)
+          .send(mixedFieldPatchBody)
+          .expect(204)
+          .then(() => {
+            return supertest(app)
+              .get(`/bookmarks/${idToPatch}`)
+              .set(authHeader)
+              .expect(expectedBookmark)
+          })
+      })
+
+    })
+
+    context('given that the bookmark does not exist', () => {
+      const badId = 123456
+      it('responds with 404', () => {
+        return supertest(app)
+          .patch(`/bookmarks/${badId}`)
+          .set(authHeader)
+          .expect(404, {error: {message: `Bookmark doesn't exist`}})
+      })
+    })
+  })
+
 
 })

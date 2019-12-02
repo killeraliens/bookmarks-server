@@ -25,6 +25,7 @@ bookmarkRouter
   .all(checkExists)
   .get(getBookmark)
   .delete(deleteBookmark)
+  .patch(bodyParser, patchBookmark)
 
 function checkExists(req, res, next) {
   const { id } = req.params
@@ -109,6 +110,26 @@ function deleteBookmark(req, res, next) {
     })
     .catch(next)
 
+}
+
+function patchBookmark(req, res, next) {
+  const db = req.app.get('db')
+  const { id } = req.params
+  const { title, url, rating, description } = req.body
+  const patchBody = { title, url, rating, description }
+
+  if (Object.values(patchBody).filter(val => val).length === 0) {
+    return res.status(400).json({
+      error: {
+        message: `Bookmark must contain an update to relevant field (title, url, description, or rating)`}})
+  }
+
+  BookmarksService
+    .updateBookmark(db, id, patchBody)
+    .then(numOfRowsAffected => {
+      res.status(204).end()
+    })
+    .catch(next)
 }
 
 

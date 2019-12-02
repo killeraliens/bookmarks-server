@@ -26,6 +26,13 @@ const BookmarksService = {
       .from('bookmarks')
       .where('id', id)
       .delete()
+  },
+
+  updateBookmark(db, id, data) {
+    return db
+      .from('bookmarks')
+      .where('id', id)
+      .update(data)
   }
 
 }
