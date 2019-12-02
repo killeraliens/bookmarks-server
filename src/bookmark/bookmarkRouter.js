@@ -1,5 +1,6 @@
 const express = require('express')
 const logger = require('../logger')
+const path = require('path')
 
 const bookmarkRouter = express.Router()
 const bodyParser = express.json()
@@ -89,7 +90,7 @@ function postBookmark(req, res, next) {
       logger.info(`successful bookmark post with id ${bookmark.id}`)
       res
         .status(201)
-        .location(`/bookmarks/${bookmark.id}`)
+        .location(path.posix.join(req.originalUrl, `/${bookmark.id}`))
         .json(bookmark)
     })
     .catch(next)
