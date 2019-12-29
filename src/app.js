@@ -17,7 +17,7 @@ app.use(validateBearerToken)
 app.get('/', (req, res) => {
   res.send('Hello boilerplate')
 })
-app.use('/api',bookmarkRouter)
+app.use('/api', bookmarkRouter)
 app.use(errorHandler)
 
 function validateBearerToken(req, res, next) {

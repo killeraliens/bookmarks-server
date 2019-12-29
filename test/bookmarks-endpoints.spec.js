@@ -8,7 +8,7 @@ describe('Bookmarks Endpoints', () => {
   before('create knex instance', () => {
     db = knex({
       "client": "pg",
-      "connection": process.env.TEST_DB_URL
+      "connection": process.env.TEST_DATABASE_URL
     })
     app.set("db", db)
   })
@@ -319,15 +319,16 @@ describe('Bookmarks Endpoints', () => {
 
     })
 
-    context('given that the bookmark does not exist', () => {
-      const badId = 123456
+    context('given that there are no bookmarks', () => {
       it('responds with 404', () => {
+        const badId = 123456
         return supertest(app)
           .patch(`/api/bookmarks/${badId}`)
           .set(authHeader)
           .expect(404, {error: {message: `Bookmark doesn't exist`}})
       })
     })
+
   })
 
 
